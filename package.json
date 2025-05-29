@@ -1,16 +1,18 @@
 {
   "name": "weather_app",
   "version": "1.0.0",
-  "main": "server.js",
+  "resolutions": {
+    "cross-spawn": "7.0.5"
+  },
   "scripts": {
+    "preinstall": "npx npm-force-resolutions",
     "start": "node server.js"
   },
   "dependencies": {
-    "cross-spawn": "^7.0.5",
     "express": "^4.18.2",
     "node-fetch": "^2.6.7"
   },
-  "overrides": {
-    "cross-spawn": "^7.0.5"
+  "devDependencies": {
+    "npm-force-resolutions": "^0.0.10"
   }
 }
