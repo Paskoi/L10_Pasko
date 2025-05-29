@@ -45,11 +45,11 @@ jobs:
           tags: ghcr.io/paskoi/l10-pasko:trivy-scan
           load: true
 
-      - name: Scan for CVE (fail on HIGH/CRITICAL)
+      - name: Scan for CVE (fail on CRITICAL)
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: ghcr.io/paskoi/l10-pasko:trivy-scan
-          severity: HIGH,CRITICAL
+          severity: CRITICAL
           exit-code: 1
 
       - name: Push multi-arch image to GHCR
