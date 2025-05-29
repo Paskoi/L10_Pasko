@@ -45,8 +45,8 @@ jobs:
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/l10_pasko-cache:cache
           cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/l10_pasko-cache:cache,mode=max
           tags: |
-            ghcr.io/${{ github.repository_owner }}/l10-pasko:latest
-            ghcr.io/${{ github.repository_owner }}/l10-pasko:${{ github.sha }}
+            ghcr.io/paskoi/l10-pasko:latest
+            ghcr.io/paskoi/l10-pasko:${{ github.sha }}
           push: false
           load: true
 
