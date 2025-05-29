@@ -1,8 +1,8 @@
 {
   "name": "weather_app",
   "version": "1.0.0",
-  "resolutions": {
-    "cross-spawn": "7.0.5"
+  "overrides": {
+    "cross-spawn": "^7.0.5"
   },
   "scripts": {
     "preinstall": "npx npm-force-resolutions",
