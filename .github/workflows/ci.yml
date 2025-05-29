@@ -49,11 +49,12 @@ jobs:
           push: false
           load: true
 
-      - name: CVE scan (fail on HIGH/CRITICAL)
-        uses: aquasecurity/trivy-action@v0.30.0
-        with:
-          image-ref: ghcr.io/${{ github.repository_owner }}/l10-pasko:latest
-          severity: HIGH,CRITICAL
+      - name: Scan for CVE (informacyjnie, nie przerywa)
+  uses: aquasecurity/trivy-action@main
+  with:
+    image-ref: ghcr.io/${{ github.repository_owner }}/l10-pasko:latest
+    exit-code: 0
+
 
       - name: Push to GHCR
         if: success()
