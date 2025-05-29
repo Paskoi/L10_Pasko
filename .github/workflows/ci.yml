@@ -36,7 +36,23 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build image with cache (no push yet)
+      - name: Build local image for Trivy scan (amd64 only)
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile
+          platforms: linux/amd64
+          tags: ghcr.io/paskoi/l10-pasko:trivy-scan
+          load: true
+
+      - name: Scan for CVE (informacyjnie, nie przerywa)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ghcr.io/paskoi/l10-pasko:trivy-scan
+          exit-code: 0
+
+      - name: Push multi-arch image to GHCR
+        if: success()
         uses: docker/build-push-action@v4
         with:
           context: .
@@ -47,25 +63,4 @@ jobs:
           tags: |
             ghcr.io/paskoi/l10-pasko:latest
             ghcr.io/paskoi/l10-pasko:${{ github.sha }}
-          push: false
-          load: true
-
-      - name: Scan for CVE (informacyjnie, nie przerywa)
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ghcr.io/${{ github.repository_owner }}/l10-pasko:latest
-          exit-code: 0
-
-      - name: Push to GHCR
-        if: success()
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: Dockerfile
-          platforms: linux/amd64,linux/arm64
-          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/l10_pasko-cache:cache
-          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/l10_pasko-cache:cache,mode=max
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/l10-pasko:latest
-            ghcr.io/${{ github.repository_owner }}/l10-pasko:${{ github.sha }}
           push: true
