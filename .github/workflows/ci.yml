@@ -13,7 +13,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -21,28 +22,28 @@ jobs:
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Log in to DockerHub (cache)
+      - name: Log in to DockerHub (for cache)
         uses: docker/login-action@v2
         with:
           registry: docker.io
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Log in to GHCR
+      - name: Log in to GitHub Container Registry (GHCR)
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build image (multiarch + cache)
+      - name: Build image with cache (no push yet)
         uses: docker/build-push-action@v4
         with:
           context: .
           file: Dockerfile
           platforms: linux/amd64,linux/arm64
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/l10_pasko-cache:cache
-          cache-to:   type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/l10_pasko-cache:cache,mode=max
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/l10_pasko-cache:cache,mode=max
           tags: |
             ghcr.io/${{ github.repository_owner }}/l10-pasko:latest
             ghcr.io/${{ github.repository_owner }}/l10-pasko:${{ github.sha }}
@@ -50,11 +51,10 @@ jobs:
           load: true
 
       - name: Scan for CVE (informacyjnie, nie przerywa)
-  uses: aquasecurity/trivy-action@main
-  with:
-    image-ref: ghcr.io/${{ github.repository_owner }}/l10-pasko:latest
-    exit-code: 0
-
+        uses: aquasecurity/trivy-action@main
+        with:
+          image-ref: ghcr.io/${{ github.repository_owner }}/l10-pasko:latest
+          exit-code: 0
 
       - name: Push to GHCR
         if: success()
@@ -64,7 +64,7 @@ jobs:
           file: Dockerfile
           platforms: linux/amd64,linux/arm64
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/l10_pasko-cache:cache
-          cache-to:   type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/l10_pasko-cache:cache,mode=max
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/l10_pasko-cache:cache,mode=max
           tags: |
             ghcr.io/${{ github.repository_owner }}/l10-pasko:latest
             ghcr.io/${{ github.repository_owner }}/l10-pasko:${{ github.sha }}
